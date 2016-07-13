@@ -34,7 +34,7 @@ module Philiprehberger
       # @return [String] titleized string
       def self.titleize(str)
         snake_case(str)
-          .gsub(/_/, ' ')
+          .gsub('_', ' ')
           .gsub(/\b\w/, &:upcase)
       end
 
@@ -45,7 +45,7 @@ module Philiprehberger
       def self.humanize(str)
         result = str.to_s
                     .gsub(/_id$/, '')
-                    .gsub(/_/, ' ')
+                    .gsub('_', ' ')
                     .strip
         return result if result.empty?
 
