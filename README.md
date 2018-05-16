@@ -27,7 +27,7 @@ gem install philiprehberger-pluralize
 ## Usage
 
 ```ruby
-require 'philiprehberger/pluralize'
+require "philiprehberger/pluralize"
 
 Philiprehberger::Pluralize.plural('person')    # => "people"
 Philiprehberger::Pluralize.singular('people')  # => "person"
@@ -77,8 +77,8 @@ Philiprehberger::Pluralize.humanize('user_id')         # => "User"
 
 ```bash
 bundle install
-bundle exec rspec      # Run tests
-bundle exec rubocop    # Check code style
+bundle exec rspec
+bundle exec rubocop
 ```
 
 ## License
