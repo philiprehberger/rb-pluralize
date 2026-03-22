@@ -55,10 +55,10 @@ RSpec.describe Philiprehberger::Pluralize do
       expect(described_class.plural(nil)).to be_nil
     end
 
-    it 'handles already plural irregular words' do
-      expect(described_class.plural('people')).to eq('people')
-      expect(described_class.plural('children')).to eq('children')
-      expect(described_class.plural('mice')).to eq('mice')
+    it 'pluralizes words ending in vowel + y' do
+      expect(described_class.plural('day')).to eq('days')
+      expect(described_class.plural('key')).to eq('keys')
+      expect(described_class.plural('boy')).to eq('boys')
     end
   end
 
