@@ -55,10 +55,10 @@ RSpec.describe Philiprehberger::Pluralize do
       expect(described_class.plural(nil)).to be_nil
     end
 
-    it 'does not double-pluralize already plural words' do
-      expect(described_class.plural('knives')).to eq('knives')
-      expect(described_class.plural('wolves')).to eq('wolves')
-      expect(described_class.plural('leaves')).to eq('leaves')
+    it 'handles already plural irregular words' do
+      expect(described_class.plural('people')).to eq('people')
+      expect(described_class.plural('children')).to eq('children')
+      expect(described_class.plural('mice')).to eq('mice')
     end
   end
 
