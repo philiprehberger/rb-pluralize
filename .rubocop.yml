@@ -30,5 +30,8 @@ Layout/LineEndStringConcatenationIndentation:
 Layout/EndOfLine:
   Enabled: false
 
+Layout/FirstArrayElementIndentation:
+  Enabled: false
+
 Bundler/OrderedGems:
   Enabled: false
