@@ -145,4 +145,56 @@ RSpec.describe Philiprehberger::Pluralize do
       expect(described_class.singular('furniture')).to eq('furniture')
     end
   end
+
+  describe '.camel_case' do
+    it 'converts snake_case to PascalCase' do
+      expect(described_class.camel_case('hello_world')).to eq('HelloWorld')
+    end
+
+    it 'converts hyphenated strings to PascalCase' do
+      expect(described_class.camel_case('hello-world')).to eq('HelloWorld')
+    end
+
+    it 'handles single word' do
+      expect(described_class.camel_case('hello')).to eq('Hello')
+    end
+  end
+
+  describe '.snake_case' do
+    it 'converts PascalCase to snake_case' do
+      expect(described_class.snake_case('HelloWorld')).to eq('hello_world')
+    end
+
+    it 'converts camelCase to snake_case' do
+      expect(described_class.snake_case('helloWorld')).to eq('hello_world')
+    end
+
+    it 'handles consecutive uppercase letters' do
+      expect(described_class.snake_case('HTMLParser')).to eq('html_parser')
+    end
+  end
+
+  describe '.titleize' do
+    it 'converts snake_case to Title Case' do
+      expect(described_class.titleize('hello_world')).to eq('Hello World')
+    end
+
+    it 'converts PascalCase to Title Case' do
+      expect(described_class.titleize('HelloWorld')).to eq('Hello World')
+    end
+  end
+
+  describe '.humanize' do
+    it 'removes _id suffix and capitalizes' do
+      expect(described_class.humanize('user_id')).to eq('User')
+    end
+
+    it 'replaces underscores with spaces and capitalizes first letter' do
+      expect(described_class.humanize('first_name')).to eq('First name')
+    end
+
+    it 'handles empty string' do
+      expect(described_class.humanize('')).to eq('')
+    end
+  end
 end
