@@ -15,7 +15,7 @@ Standalone English pluralization, singularization, and string inflection
 Add to your Gemfile:
 
 ```ruby
-gem 'philiprehberger-pluralize'
+gem "philiprehberger-pluralize"
 ```
 
 Or install directly:
