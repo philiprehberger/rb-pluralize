@@ -10,7 +10,8 @@ Gem::Specification.new do |spec|
 
   spec.summary = 'Standalone English pluralization, singularization, and string inflection'
   spec.description = 'Pluralize and singularize English words without ActiveSupport. Includes ' \
-                     '200+ rules, irregular word handling, uncountable words, and string ' \
+                     '200+ rules, irregular word handling, uncountable words, possessives, ' \
+                     'ordinals, plural detection, hyphenated compounds, and string ' \
                      'inflections (camelCase, snake_case, titleize).'
   spec.homepage = 'https://philiprehberger.com/open-source-packages/ruby/philiprehberger-pluralize'
   spec.license = 'MIT'

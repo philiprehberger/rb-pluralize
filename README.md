@@ -34,6 +34,46 @@ Philiprehberger::Pluralize.singular('people')  # => "person"
 Philiprehberger::Pluralize.count(5, 'item')    # => "5 items"
 ```
 
+### Possessive Forms
+
+```ruby
+Philiprehberger::Pluralize.possessive('dog')       # => "dog's"
+Philiprehberger::Pluralize.possessive('dogs')      # => "dogs'"
+Philiprehberger::Pluralize.possessive('James')     # => "James'"
+Philiprehberger::Pluralize.possessive('children')  # => "children's"
+```
+
+### Hyphenated Compound Words
+
+```ruby
+Philiprehberger::Pluralize.plural('mother-in-law')  # => "mothers-in-law"
+Philiprehberger::Pluralize.plural('well-being')     # => "well-beings"
+```
+
+### Ordinal Words
+
+```ruby
+Philiprehberger::Pluralize.ordinal(1)   # => "first"
+Philiprehberger::Pluralize.ordinal(12)  # => "twelfth"
+Philiprehberger::Pluralize.ordinal(21)  # => "twenty-first"
+```
+
+### Plural Detection
+
+```ruby
+Philiprehberger::Pluralize.plural?('cats')    # => true
+Philiprehberger::Pluralize.plural?('cat')     # => false
+Philiprehberger::Pluralize.plural?('people')  # => true
+```
+
+### Count with Words
+
+```ruby
+Philiprehberger::Pluralize.count(5, 'item', style: :words)   # => "five items"
+Philiprehberger::Pluralize.count(1, 'person', style: :words)  # => "one person"
+Philiprehberger::Pluralize.count(20, 'item', style: :words)  # => "20 items"
+```
+
 ### Custom Irregular Words
 
 ```ruby
@@ -62,9 +102,12 @@ Philiprehberger::Pluralize.humanize('user_id')         # => "User"
 
 | Method | Description |
 |--------|-------------|
-| `Pluralize.plural(word)` | Return the plural form of a word |
+| `Pluralize.plural(word)` | Return the plural form of a word (supports hyphenated compounds) |
 | `Pluralize.singular(word)` | Return the singular form of a word |
-| `Pluralize.count(n, word)` | Format a count with the appropriate singular or plural word |
+| `Pluralize.possessive(word)` | Generate the possessive form of a word |
+| `Pluralize.plural?(word)` | Return true if the word appears to be plural |
+| `Pluralize.ordinal(n)` | Convert a number (1-100) to its ordinal word |
+| `Pluralize.count(n, word, style:)` | Format a count with singular/plural word (`:numeric` or `:words` style) |
 | `Pluralize.irregular(singular, plural)` | Register a custom irregular singular/plural pair |
 | `Pluralize.uncountable(word)` | Register a word as uncountable |
 | `Pluralize.camel_case(str)` | Convert an underscored or hyphenated string to PascalCase |

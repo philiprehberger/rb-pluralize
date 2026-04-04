@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-04-03
+
+### Added
+- Add `Pluralize.possessive(word)` for possessive form generation
+- Add hyphenated compound word support in `Pluralize.plural` (X-in-Y, X-of-Y patterns)
+- Add `Pluralize.ordinal(n)` for number-to-ordinal-word conversion (1-100)
+- Add `Pluralize.plural?(word)` predicate to detect plural words
+- Add `:words` style option to `Pluralize.count` for spelled-out numbers (0-12)
+
 ## [0.1.6] - 2026-03-31
 
 ### Added

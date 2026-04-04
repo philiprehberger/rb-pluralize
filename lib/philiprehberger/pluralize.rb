@@ -15,10 +15,16 @@ module Philiprehberger
     class << self
       # Return the plural form of a word
       #
+      # Handles hyphenated compound words:
+      # - X-in-Y / X-of-Y patterns pluralize the first word
+      # - Other compounds pluralize the last word
+      #
       # @param word [String] the word to pluralize
       # @return [String] the plural form
       def plural(word)
         return word if word.nil? || word.strip.empty?
+
+        return pluralize_hyphenated(word) if word.include?('-')
 
         lowered = word.downcase
         return word if uncountable?(lowered)
@@ -45,14 +51,53 @@ module Philiprehberger
         apply_rules(word, Rules::SINGULARS)
       end
 
+      # Generate the possessive form of a word
+      #
+      # @param word [String] the word
+      # @return [String] the possessive form
+      def possessive(word)
+        return word if word.nil? || word.strip.empty?
+
+        if word.end_with?('s')
+          "#{word}'"
+        else
+          "#{word}'s"
+        end
+      end
+
+      # Return true if the word appears to be plural
+      #
+      # Uses a simple heuristic: singularize the word, and if the result
+      # differs from the input, it is likely plural.
+      #
+      # @param word [String] the word to check
+      # @return [Boolean]
+      def plural?(word)
+        return false if word.nil? || word.strip.empty?
+
+        singular(word) != word
+      end
+
+      # Convert a number to its ordinal word representation (up to 100)
+      #
+      # @param n [Integer] the number (1-100)
+      # @return [String] the ordinal word
+      def ordinal(n)
+        raise ArgumentError, 'ordinal supports numbers from 1 to 100' if n < 1 || n > 100
+
+        ORDINALS[n] || compound_ordinal(n)
+      end
+
       # Format a count with the appropriate singular or plural word
       #
       # @param n [Integer] the count
       # @param word [String] the word to inflect
+      # @param style [Symbol] :numeric (default) or :words (spell out numbers <= 12)
       # @return [String] the formatted count string
-      def count(n, word)
+      def count(n, word, style: :numeric)
         inflected = n == 1 ? singular(word) : plural(word)
-        "#{n} #{inflected}"
+        prefix = style == :words && n >= 0 && n <= 12 ? number_to_word(n) : n.to_s
+        "#{prefix} #{inflected}"
       end
 
       # Register an irregular singular/plural pair
@@ -113,6 +158,47 @@ module Philiprehberger
       end
 
       private
+
+      ORDINALS = {
+        1 => 'first', 2 => 'second', 3 => 'third', 4 => 'fourth', 5 => 'fifth',
+        6 => 'sixth', 7 => 'seventh', 8 => 'eighth', 9 => 'ninth', 10 => 'tenth',
+        11 => 'eleventh', 12 => 'twelfth', 13 => 'thirteenth', 14 => 'fourteenth',
+        15 => 'fifteenth', 16 => 'sixteenth', 17 => 'seventeenth', 18 => 'eighteenth',
+        19 => 'nineteenth', 20 => 'twentieth', 30 => 'thirtieth', 40 => 'fortieth',
+        50 => 'fiftieth', 60 => 'sixtieth', 70 => 'seventieth', 80 => 'eightieth',
+        90 => 'ninetieth', 100 => 'one hundredth'
+      }.freeze
+
+      TENS = {
+        20 => 'twenty', 30 => 'thirty', 40 => 'forty', 50 => 'fifty',
+        60 => 'sixty', 70 => 'seventy', 80 => 'eighty', 90 => 'ninety'
+      }.freeze
+
+      NUMBER_WORDS = %w[zero one two three four five six seven eight nine ten eleven twelve].freeze
+
+      HYPHENATED_PREPOSITIONS = %w[in of].freeze
+
+      def compound_ordinal(n)
+        tens = (n / 10) * 10
+        ones = n % 10
+        "#{TENS[tens]}-#{ORDINALS[ones]}"
+      end
+
+      def number_to_word(n)
+        NUMBER_WORDS[n] || n.to_s
+      end
+
+      def pluralize_hyphenated(word)
+        parts = word.split('-')
+
+        if parts.length >= 3 && HYPHENATED_PREPOSITIONS.include?(parts[1].downcase)
+          parts[0] = plural(parts[0])
+        else
+          parts[-1] = plural(parts[-1])
+        end
+
+        parts.join('-')
+      end
 
       def uncountable?(word)
         Rules::UNCOUNTABLES.include?(word) || @custom_uncountables.include?(word)
