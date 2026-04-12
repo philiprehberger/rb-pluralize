@@ -254,11 +254,112 @@ RSpec.describe Philiprehberger::Pluralize do
     end
   end
 
+  describe '.pluralize' do
+    it 'uses the singular form when count is 1' do
+      expect(described_class.pluralize(1, 'apple')).to eq('1 apple')
+    end
+
+    it 'uses the derived plural form when count is not 1' do
+      expect(described_class.pluralize(0, 'apple')).to eq('0 apples')
+      expect(described_class.pluralize(2, 'apple')).to eq('2 apples')
+      expect(described_class.pluralize(10, 'baby')).to eq('10 babies')
+    end
+
+    it 'uses an explicit plural form when provided' do
+      expect(described_class.pluralize(3, 'octopus', 'octopi')).to eq('3 octopi')
+      expect(described_class.pluralize(1, 'octopus', 'octopi')).to eq('1 octopus')
+    end
+
+    it 'handles irregular singulars without an explicit plural' do
+      expect(described_class.pluralize(3, 'person')).to eq('3 people')
+      expect(described_class.pluralize(1, 'person')).to eq('1 person')
+    end
+
+    it 'handles uncountable words' do
+      expect(described_class.pluralize(5, 'sheep')).to eq('5 sheep')
+    end
+
+    it 'supports negative counts as non-singular' do
+      expect(described_class.pluralize(-1, 'item')).to eq('-1 items')
+    end
+
+    it 'raises ArgumentError when count is not an Integer' do
+      expect { described_class.pluralize('1', 'apple') }.to raise_error(ArgumentError, /Integer/)
+      expect { described_class.pluralize(nil, 'apple') }.to raise_error(ArgumentError, /Integer/)
+    end
+
+    it 'raises ArgumentError when singular is nil or empty' do
+      expect { described_class.pluralize(1, nil) }.to raise_error(ArgumentError)
+      expect { described_class.pluralize(1, '') }.to raise_error(ArgumentError)
+      expect { described_class.pluralize(1, '   ') }.to raise_error(ArgumentError)
+    end
+  end
+
+  describe '.capitalize_and_pluralize' do
+    it 'capitalizes a lowercase singular word and pluralizes it' do
+      expect(described_class.capitalize_and_pluralize('cat')).to eq('Cats')
+    end
+
+    it 'capitalizes irregular plurals correctly' do
+      expect(described_class.capitalize_and_pluralize('person')).to eq('People')
+      expect(described_class.capitalize_and_pluralize('child')).to eq('Children')
+    end
+
+    it 'preserves an already-capitalized word' do
+      expect(described_class.capitalize_and_pluralize('Box')).to eq('Boxes')
+    end
+
+    it 'handles uncountable words' do
+      expect(described_class.capitalize_and_pluralize('sheep')).to eq('Sheep')
+    end
+
+    it 'returns empty or nil input unchanged' do
+      expect(described_class.capitalize_and_pluralize('')).to eq('')
+      expect(described_class.capitalize_and_pluralize('   ')).to eq('   ')
+      expect(described_class.capitalize_and_pluralize(nil)).to be_nil
+    end
+  end
+
+  describe '.uncountable?' do
+    it 'returns true for built-in uncountable words' do
+      expect(described_class.uncountable?('sheep')).to be true
+      expect(described_class.uncountable?('fish')).to be true
+      expect(described_class.uncountable?('equipment')).to be true
+    end
+
+    it 'is case insensitive' do
+      expect(described_class.uncountable?('SHEEP')).to be true
+      expect(described_class.uncountable?('Fish')).to be true
+    end
+
+    it 'returns true for custom-registered uncountables' do
+      described_class.uncountable('furniture')
+      expect(described_class.uncountable?('furniture')).to be true
+    end
+
+    it 'returns false for normal words' do
+      expect(described_class.uncountable?('cat')).to be false
+      expect(described_class.uncountable?('box')).to be false
+    end
+
+    it 'returns false for empty or nil input' do
+      expect(described_class.uncountable?('')).to be false
+      expect(described_class.uncountable?('   ')).to be false
+      expect(described_class.uncountable?(nil)).to be false
+    end
+  end
+
   describe '.irregular' do
     it 'registers a custom irregular pair' do
       described_class.irregular('radius', 'radii')
       expect(described_class.plural('radius')).to eq('radii')
       expect(described_class.singular('radii')).to eq('radius')
+    end
+
+    it 'raises ArgumentError when singular or plural is blank' do
+      expect { described_class.irregular(nil, 'radii') }.to raise_error(ArgumentError)
+      expect { described_class.irregular('radius', '') }.to raise_error(ArgumentError)
+      expect { described_class.irregular('   ', '   ') }.to raise_error(ArgumentError)
     end
   end
 
@@ -267,6 +368,49 @@ RSpec.describe Philiprehberger::Pluralize do
       described_class.uncountable('furniture')
       expect(described_class.plural('furniture')).to eq('furniture')
       expect(described_class.singular('furniture')).to eq('furniture')
+    end
+
+    it 'raises ArgumentError when word is blank' do
+      expect { described_class.uncountable(nil) }.to raise_error(ArgumentError)
+      expect { described_class.uncountable('') }.to raise_error(ArgumentError)
+    end
+  end
+
+  describe '.irregulars' do
+    it 'returns an empty hash by default' do
+      expect(described_class.irregulars).to eq({})
+    end
+
+    it 'returns registered custom irregular pairs' do
+      described_class.irregular('radius', 'radii')
+      described_class.irregular('Cactus', 'Cacti')
+      expect(described_class.irregulars).to eq('radius' => 'radii', 'cactus' => 'cacti')
+    end
+
+    it 'returns a frozen copy that does not affect internal state when mutated' do
+      described_class.irregular('radius', 'radii')
+      snapshot = described_class.irregulars
+      expect(snapshot).to be_frozen
+      expect { snapshot['foo'] = 'foos' }.to raise_error(FrozenError)
+    end
+  end
+
+  describe '.uncountables' do
+    it 'returns an empty array by default' do
+      expect(described_class.uncountables).to eq([])
+    end
+
+    it 'returns registered custom uncountables sorted' do
+      described_class.uncountable('furniture')
+      described_class.uncountable('Advice')
+      expect(described_class.uncountables).to eq(%w[advice furniture])
+    end
+
+    it 'returns a frozen copy that cannot be mutated' do
+      described_class.uncountable('furniture')
+      snapshot = described_class.uncountables
+      expect(snapshot).to be_frozen
+      expect { snapshot << 'other' }.to raise_error(FrozenError)
     end
   end
 
