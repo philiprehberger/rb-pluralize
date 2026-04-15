@@ -74,12 +74,38 @@ Philiprehberger::Pluralize.count(1, 'person', style: :words)  # => "one person"
 Philiprehberger::Pluralize.count(20, 'item', style: :words)  # => "20 items"
 ```
 
+### Rails-style pluralize Helper
+
+```ruby
+Philiprehberger::Pluralize.pluralize(1, 'apple')               # => "1 apple"
+Philiprehberger::Pluralize.pluralize(3, 'apple')               # => "3 apples"
+Philiprehberger::Pluralize.pluralize(3, 'octopus', 'octopi')   # => "3 octopi"
+Philiprehberger::Pluralize.pluralize(2, 'person')              # => "2 people"
+```
+
+### Capitalize and Pluralize
+
+```ruby
+Philiprehberger::Pluralize.capitalize_and_pluralize('cat')     # => "Cats"
+Philiprehberger::Pluralize.capitalize_and_pluralize('person')  # => "People"
+Philiprehberger::Pluralize.capitalize_and_pluralize('child')   # => "Children"
+```
+
+### Uncountable Detection
+
+```ruby
+Philiprehberger::Pluralize.uncountable?('sheep')      # => true
+Philiprehberger::Pluralize.uncountable?('equipment')  # => true
+Philiprehberger::Pluralize.uncountable?('cat')        # => false
+```
+
 ### Custom Irregular Words
 
 ```ruby
 Philiprehberger::Pluralize.irregular('radius', 'radii')
 Philiprehberger::Pluralize.plural('radius')    # => "radii"
 Philiprehberger::Pluralize.singular('radii')   # => "radius"
+Philiprehberger::Pluralize.irregulars          # => {"radius"=>"radii"}
 ```
 
 ### Uncountable Words
@@ -87,6 +113,7 @@ Philiprehberger::Pluralize.singular('radii')   # => "radius"
 ```ruby
 Philiprehberger::Pluralize.uncountable('equipment')
 Philiprehberger::Pluralize.plural('equipment')  # => "equipment"
+Philiprehberger::Pluralize.uncountables         # => ["equipment"]
 ```
 
 ### String Inflections
@@ -108,8 +135,13 @@ Philiprehberger::Pluralize.humanize('user_id')         # => "User"
 | `Pluralize.plural?(word)` | Return true if the word appears to be plural |
 | `Pluralize.ordinal(n)` | Convert a number (1-100) to its ordinal word |
 | `Pluralize.count(n, word, style:)` | Format a count with singular/plural word (`:numeric` or `:words` style) |
+| `Pluralize.pluralize(n, singular, plural = nil)` | Rails-style: format a count with a required singular and optional explicit plural |
+| `Pluralize.capitalize_and_pluralize(word)` | Capitalize a word and return its plural form |
+| `Pluralize.uncountable?(word)` | Return true if the word is uncountable (built-in or custom) |
 | `Pluralize.irregular(singular, plural)` | Register a custom irregular singular/plural pair |
 | `Pluralize.uncountable(word)` | Register a word as uncountable |
+| `Pluralize.irregulars` | List custom-registered irregular pairs (frozen copy) |
+| `Pluralize.uncountables` | List custom-registered uncountable words (frozen copy) |
 | `Pluralize.camel_case(str)` | Convert an underscored or hyphenated string to PascalCase |
 | `Pluralize.snake_case(str)` | Convert a PascalCase or camelCase string to snake_case |
 | `Pluralize.titleize(str)` | Convert an underscored or hyphenated string to Title Case |

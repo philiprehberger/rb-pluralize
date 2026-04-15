@@ -100,12 +100,59 @@ module Philiprehberger
         "#{prefix} #{inflected}"
       end
 
+      # Return true if the word is uncountable (same singular and plural form)
+      #
+      # Checks both the built-in uncountable list and any custom uncountables
+      # registered via .uncountable.
+      #
+      # @param word [String] the word to check
+      # @return [Boolean]
+      def uncountable?(word)
+        return false if word.nil? || word.strip.empty?
+
+        lowered = word.downcase
+        Rules::UNCOUNTABLES.include?(lowered) || @custom_uncountables.include?(lowered)
+      end
+
+      # Format a count with the correct singular or plural form
+      #
+      # Rails-style helper: pass a count, a singular form, and optionally an
+      # explicit plural form. When plural is omitted, the plural is derived
+      # from the singular via .plural.
+      #
+      # @param n [Integer] the count
+      # @param singular_word [String] the singular form
+      # @param plural_word [String, nil] optional explicit plural form
+      # @return [String] the formatted count string, e.g. "5 octopi"
+      def pluralize(n, singular_word, plural_word = nil)
+        raise ArgumentError, 'count must be an Integer' unless n.is_a?(Integer)
+        raise ArgumentError, 'singular word must not be nil or empty' if singular_word.nil? || singular_word.strip.empty?
+
+        word = n == 1 ? singular_word : (plural_word || plural(singular_word))
+        "#{n} #{word}"
+      end
+
+      # Capitalize a word and return its plural form
+      #
+      # Useful for sentence-style output such as "People" or "Children".
+      # Preserves irregular and uncountable handling.
+      #
+      # @param word [String] the word to capitalize and pluralize
+      # @return [String] the capitalized plural form
+      def capitalize_and_pluralize(word)
+        return word if word.nil? || word.strip.empty?
+
+        plural(word.downcase).capitalize
+      end
+
       # Register an irregular singular/plural pair
       #
       # @param singular_word [String] the singular form
       # @param plural_word [String] the plural form
       # @return [void]
       def irregular(singular_word, plural_word)
+        raise ArgumentError, 'singular and plural must not be nil or empty' if blank?(singular_word) || blank?(plural_word)
+
         @custom_irregulars[singular_word.downcase] = plural_word.downcase
       end
 
@@ -114,7 +161,27 @@ module Philiprehberger
       # @param word [String] the uncountable word
       # @return [void]
       def uncountable(word)
+        raise ArgumentError, 'uncountable word must not be nil or empty' if blank?(word)
+
         @custom_uncountables.add(word.downcase)
+      end
+
+      # List custom-registered irregular singular/plural pairs
+      #
+      # Returns a frozen copy so callers cannot mutate internal state.
+      #
+      # @return [Hash{String => String}] singular => plural mapping
+      def irregulars
+        @custom_irregulars.dup.freeze
+      end
+
+      # List custom-registered uncountable words
+      #
+      # Returns a frozen copy so callers cannot mutate internal state.
+      #
+      # @return [Array<String>] sorted list of uncountable words
+      def uncountables
+        @custom_uncountables.to_a.sort.freeze
       end
 
       # Convert a string to PascalCase
@@ -200,8 +267,8 @@ module Philiprehberger
         parts.join('-')
       end
 
-      def uncountable?(word)
-        Rules::UNCOUNTABLES.include?(word) || @custom_uncountables.include?(word)
+      def blank?(value)
+        value.nil? || value.to_s.strip.empty?
       end
 
       def find_irregular(word)
