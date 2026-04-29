@@ -99,6 +99,15 @@ Philiprehberger::Pluralize.uncountable?('equipment')  # => true
 Philiprehberger::Pluralize.uncountable?('cat')        # => false
 ```
 
+### Indefinite Article
+
+```ruby
+Philiprehberger::Pluralize.indefinite_article('apple')      # => "an"
+Philiprehberger::Pluralize.indefinite_article('university') # => "a"
+Philiprehberger::Pluralize.indefinite_article('hour')       # => "an"
+Philiprehberger::Pluralize.indefinite_article('Apple', capitalize: true) # => "An"
+```
+
 ### Custom Irregular Words
 
 ```ruby
@@ -137,6 +146,7 @@ Philiprehberger::Pluralize.humanize('user_id')         # => "User"
 | `Pluralize.count(n, word, style:)` | Format a count with singular/plural word (`:numeric` or `:words` style) |
 | `Pluralize.pluralize(n, singular, plural = nil)` | Rails-style: format a count with a required singular and optional explicit plural |
 | `Pluralize.capitalize_and_pluralize(word)` | Capitalize a word and return its plural form |
+| `.indefinite_article(word, capitalize: false)` | Return "a" or "an" for `word`, with silent-h and consonant-y-vowel handling |
 | `Pluralize.uncountable?(word)` | Return true if the word is uncountable (built-in or custom) |
 | `Pluralize.irregular(singular, plural)` | Register a custom irregular singular/plural pair |
 | `Pluralize.uncountable(word)` | Register a word as uncountable |

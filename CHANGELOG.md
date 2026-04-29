@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-04-29
+
+### Added
+- `Pluralize.indefinite_article(word, capitalize: false)` returning "a"/"an" with handling for silent-h words ("hour", "honest") and consonant-y-vowel words ("university", "unicorn")
+
 ## [0.3.0] - 2026-04-15
 
 ### Added
@@ -70,7 +75,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Custom uncountable word registration
 - String inflections: camel_case, snake_case, titleize, humanize
 
-[Unreleased]: https://github.com/philiprehberger/rb-pluralize/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/philiprehberger/rb-pluralize/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/philiprehberger/rb-pluralize/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/philiprehberger/rb-pluralize/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/philiprehberger/rb-pluralize/compare/v0.1.6...v0.2.0
 [0.1.6]: https://github.com/philiprehberger/rb-pluralize/compare/v0.1.5...v0.1.6

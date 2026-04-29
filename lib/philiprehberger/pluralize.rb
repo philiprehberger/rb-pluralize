@@ -224,7 +224,36 @@ module Philiprehberger
         @custom_uncountables = Set.new
       end
 
+      # Return the indefinite article ("a" or "an") for `word`.
+      #
+      # Handles vowel-letter prefixes, common silent-h words ("hour", "honest"),
+      # and consonant-y-vowel cases ("university", "unicorn").
+      #
+      # @param word [String] the noun the article precedes
+      # @param capitalize [Boolean] return "A"/"An" instead of "a"/"an"
+      # @return [String] "a", "an", "A", or "An"
+      # @raise [ArgumentError] when word is empty
+      def indefinite_article(word, capitalize: false)
+        raise ArgumentError, 'word must not be empty' if word.nil? || word.empty?
+
+        lower = word.downcase
+        article =
+          if SILENT_H_AN.any? { |w| lower.start_with?(w) }
+            'an'
+          elsif CONSONANT_Y_VOWEL_A.any? { |w| lower.start_with?(w) }
+            'a'
+          elsif %w[a e i o u].include?(lower[0])
+            'an'
+          else
+            'a'
+          end
+        capitalize ? article.capitalize : article
+      end
+
       private
+
+      SILENT_H_AN = %w[hour honest honor honour heir heirloom heirs herb].freeze
+      CONSONANT_Y_VOWEL_A = %w[universe university unicorn unique uniform united union user useful one once].freeze
 
       ORDINALS = {
         1 => 'first', 2 => 'second', 3 => 'third', 4 => 'fourth', 5 => 'fifth',

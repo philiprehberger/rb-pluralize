@@ -320,6 +320,38 @@ RSpec.describe Philiprehberger::Pluralize do
     end
   end
 
+  describe '.indefinite_article' do
+    it 'returns "an" for words starting with a vowel' do
+      expect(described_class.indefinite_article('apple')).to eq('an')
+      expect(described_class.indefinite_article('orange')).to eq('an')
+      expect(described_class.indefinite_article('umbrella')).to eq('an')
+    end
+
+    it 'returns "a" for words starting with a consonant' do
+      expect(described_class.indefinite_article('banana')).to eq('a')
+      expect(described_class.indefinite_article('cat')).to eq('a')
+    end
+
+    it 'returns "an" for silent-h words' do
+      expect(described_class.indefinite_article('hour')).to eq('an')
+      expect(described_class.indefinite_article('honest')).to eq('an')
+    end
+
+    it 'returns "a" for consonant-y-vowel words' do
+      expect(described_class.indefinite_article('university')).to eq('a')
+      expect(described_class.indefinite_article('unicorn')).to eq('a')
+    end
+
+    it 'capitalizes the article when capitalize: true' do
+      expect(described_class.indefinite_article('apple', capitalize: true)).to eq('An')
+      expect(described_class.indefinite_article('banana', capitalize: true)).to eq('A')
+    end
+
+    it 'raises ArgumentError when word is empty' do
+      expect { described_class.indefinite_article('') }.to raise_error(ArgumentError)
+    end
+  end
+
   describe '.uncountable?' do
     it 'returns true for built-in uncountable words' do
       expect(described_class.uncountable?('sheep')).to be true
